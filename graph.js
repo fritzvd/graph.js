@@ -366,7 +366,7 @@ angular.module('graph')
           if (attrs.xmin){
             var xmin = parseFloat(attrs.xmin);
           };
-          legend = {
+          var legend = {
             title: scope.title,
             xLabel: scope.xlabel,
             yLabel: scope.ylabel,
