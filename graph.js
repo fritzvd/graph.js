@@ -1,7 +1,7 @@
-//nxt-graph.js
+//graph.js
 
 // create the directives as re-usable components
-app
+angular.module('graph', [])
     .directive('nxtTimeseries', function($http) {
         var busy = false;
         var readyForNext = null;
@@ -117,7 +117,7 @@ app
     });
 
 
-app
+angular.module('graph')
 .directive('nxtLineGraph', function () {
   var chart = function (data, element, legend) {
       var margin = {
@@ -384,7 +384,7 @@ app
   };
 });
 
-app
+angular.module('graph')
     .directive('nxtCrossSection', function($http) {
         var busy = false;
         return {

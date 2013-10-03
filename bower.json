@@ -1,0 +1,31 @@
+{
+  "name": "graph",
+  "main": "graph.js",
+  "version": "0.0.1",
+  "homepage": "https://github.com/lizardnxt/graph.js",
+  "authors": [
+    "fritzvd <fritz.vandeventer@nelen-schuurmans.nl>",
+    "gijs <gijs.nijholt@nelen-schuurmans.nl>",
+    "arjenvrielink <arjen.vrielink@nelen-schuurmans.nl>",
+  ],
+  "description": "Graphs for lizard-nxt",
+  "keywords": [
+    "directive",
+    "angular",
+    "d3"
+  ],
+  "license": "GPL v3",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "devDependencies": {
+    "bootstrap": "~3.0.0",
+    "angular": "~1.0.8",
+    "d3": "~3.3.6"
+  }
+}

@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html ng-app="demo-graph">
+  <head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+      <meta name="apple-mobile-web-app-capable" content="yes">
+
+      <title>Omnibox Demo</title>
+
+      <link href="../graph.css" rel="stylesheet"/>
+      <link href="../bower_packages/bootstrap/dist/css/bootstrap.css" rel="stylesheet"/>
+      <link href="demo.css" rel="stylesheet"/>
+  </head>
+  <body ng-controller="DemoCtrl">
+    <div class="container">
+
+      <div class="row">
+        <div class="col-md-8">
+          <nxt-line-graph data="data" title="metadata.title" xlabel="metadata.xlabel" ylabel="metadata.ylabel"></nxt-line-graph>
+          
+        </div>
+        <div class="col-md-4">
+          <button type="button" class="btn btn-default" ng-click="randomizeData()">Randomize Data for Graph</button>
+        </div>
+      </div>
+      
+    </div>
+      <script type="text/javascript" src="../bower_packages/angular/angular.js"></script>
+      <script type="text/javascript" src="demo.js"></script>
+      <script type="text/javascript" src="../graph.js"></script>
+  </body>
+</html>
