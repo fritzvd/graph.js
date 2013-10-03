@@ -47,6 +47,8 @@ app.controller('DemoCtrl', function ($scope){
           }];
   };
 
+  $scope.randomizeData();
+  
   $scope.$watch('data', function (){
     if ($scope.data){
       $scope.format_data($scope.data);    
