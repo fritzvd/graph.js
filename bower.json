@@ -1,7 +1,7 @@
 {
   "name": "graph",
   "main": "graph.js",
-  "version": "0.0.1",
+  "version": "0.1.1",
   "homepage": "https://github.com/lizardnxt/graph.js",
   "authors": [
     "fritzvd <fritz.vandeventer@nelen-schuurmans.nl>",
