@@ -152,7 +152,7 @@ angular.module('graph')
       }
 
       var y = d3.scale.linear()
-          .domain([legend.ymin, legend.ymax + 1])
+          .domain([legend.ymin, legend.ymax])
           .range([height, 0]);
 
       var line = d3.svg.line()
