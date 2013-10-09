@@ -370,7 +370,14 @@ angular.module('graph')
             xmax: xmax,
             type: attrs.type
           };
+          // clear the chart beforehand
+          // NOTE: Still needs some good error handling. 
+          // Such as not calling chart if data is malformed
+          d3.select("#chart").html("");
           chart(scope.data, element, legend);
+        } else {
+          // empty the mofo beforehand
+          d3.select("#chart").html("");
         }
       });
     }
