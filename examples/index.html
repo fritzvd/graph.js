@@ -15,15 +15,38 @@
     <div class="container">
 
       <div class="row">
-        <div class="col-md-8 graph">
-          <nxt-line-graph data="formatted_data" title="metadata.title" xlabel="metadata.xlabel" ylabel="metadata.ylabel"></nxt-line-graph>
+        <div class="col-md-8">
+          <div class="row">
+            <div class="col-md-12 graph">
+              <!-- <nxt-line-graph data="formatted_data" title="metadata.title" xlabel="metadata.xlabel" ylabel="metadata.ylabel"></nxt-line-graph> -->
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-12 graph">
+              <graph line data="formatted_data1" title="metadata.title" xlabel="metadata.xlabel" ylabel="metadata.ylabel"></graph>
+            </div>
+          </div>
+
+         <div class="row">
+            <div class="col-md-12 graph">
+              <graph line data="formatted_data2" title="metadata.title" xlabel="metadata.xlabel" ylabel="metadata.ylabel"></graph>
+            </div>
+          </div>
+
+         <div class="row">
+            <div class="col-md-12 graph">
+              <graph multiline line data="formatted_2line" title="metadata.title" xlabel="metadata.xlabel" ylabel="metadata.ylabel"></graph>
+            </div>
+          </div>
+
           
         </div>
         <div class="col-md-4">
-          <button type="button" class="btn btn-default" ng-click="randomizeData()">Randomize Data for Graph</button>
+          <button type="button" class="btn btn-default" ng-click="updateData()">Randomize Data for Graph</button>
           <button type="button" class="btn btn-default" ng-click="malformData()">Break Graph</button>
         </div>
       </div>
+
       
     </div>
       <script type="text/javascript" src="../bower_packages/angular/angular.js"></script>

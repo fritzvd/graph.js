@@ -33,40 +33,65 @@ app.controller('DemoCtrl', function ($scope){
         baseDate + 1000000,
         baseDate + 1100000,
       ];
-     $scope.data = [{
-            type: 'x',
+     var data = [{
+            type: 'y',
             name: 'Debiet',
             values: values,
             unit: "m/s"
           },
           {
-            type: 'y',
+            type: 'x',
             name: 'Time',
             values: dates,
             unit: "hr:min"
           }];
+      return data
   };
 
-  $scope.randomizeData();
-
+  $scope.updateData = function () {
+    $scope.data1 = $scope.randomizeData();
+    $scope.data2 = $scope.randomizeData();
+    $scope.data2line = $scope.data1;
+    $scope.data2line.push($scope.data2[0])
+  };
+  $scope.updateData();
+  
   $scope.malformData = function () {
-    $scope.formatted_data = [[2]];
+    $scope.data1 = [[2]];
   };
   
-  $scope.$watch('data', function () {
-    if ($scope.data){
-      $scope.format_data($scope.data);    
+  $scope.$watch('data1', function () {
+    if ($scope.data1){
+
+      $scope.formatted_data1 = $scope.format_data($scope.data1);
+      $scope.formatted_data2 = $scope.format_data($scope.data2);
+      $scope.formatted_2line = $scope.format_2linedata($scope.data2line);
+      // console.log($scope.data2line);
     }
   });
 
   $scope.format_data = function(data) {
-    $scope.formatted_data = [];
+    var formatted_data = [];
     for (var i=0; i<data[0].values.length; i++){
       var xyobject = {
         date: data[1].values[i], 
         value: data[0].values[i] 
       };
-      $scope.formatted_data.push(xyobject);
+      formatted_data.push(xyobject);
     };
+    return formatted_data
+  };
+
+  $scope.format_2linedata = function(data) {
+    var formatted_data = [];
+    for (var i=0; i<data[0].values.length; i++){
+      var xyobject = {
+        date: data[1].values[i], 
+        value: data[0].values[i],
+        value2: data[2].values[i] 
+      };
+      formatted_data.push(xyobject);
+    };
+    return formatted_data
   };
 });

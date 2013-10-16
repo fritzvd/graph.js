@@ -21,9 +21,16 @@
 .x.axis path {
     display: none;
 }
+
 .line {
     fill: none;
     stroke: darkcyan;
+    stroke-width: 2px;
+}
+
+.line2 {
+    fill: none;
+    stroke: crimson;
     stroke-width: 2px;
 }
 
