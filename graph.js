@@ -135,7 +135,7 @@ angular.module('graph')
         var y = d3.scale.linear().domain([yMin, yMax])
         .range([height, 0]);
         var xdata = function(d) { return x(d.x); }
-        var ydata = function(d) { return x(d.y); }
+        var ydata = function(d) { return y(d.y); }
 
         var circles = svg.selectAll("circle")
                             .data(data)
@@ -143,11 +143,11 @@ angular.module('graph')
                               .append("circle")
                                 .attr("cx", xdata)
                                 .attr("cy", ydata)
-                                .attr("r", 5)
+                                .attr("r", 3)
                                 .attr("opacity", 0.8)
                                 .attr("fill", 'crimson')
-                              .on("mouseover", function() { d3.select(this).attr("r", 10) })
-                              .on("mouseout", function() { d3.select(this).attr("r", 5) });
+                              .on("mouseover", function() { d3.select(this).attr("r", 6) })
+                              .on("mouseout", function() { d3.select(this).attr("r", 3) });
 
        var make_x_axis = function () {
             return d3.svg.axis()
