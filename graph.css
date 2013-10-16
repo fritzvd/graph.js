@@ -45,6 +45,12 @@
   shape-rendering: crispEdges;
 }
 
+.y1.axis  text {
+  fill: crimson;
+  stroke: none;
+  font-size: 0.8em;
+}
+
 text, axis text {
   fill: darkgray;
   stroke: none;

@@ -17,13 +17,13 @@
       <div class="row">
         <div class="col-md-8">
           <div class="row">
-            <div class="col-md-12 graph">
+            <div class="col-md-12">
               <!-- <nxt-line-graph data="formatted_data" title="metadata.title" xlabel="metadata.xlabel" ylabel="metadata.ylabel"></nxt-line-graph> -->
             </div>
           </div>
-          <div class="row">
+<!--           <div class="row">
             <div class="col-md-12 graph">
-              <graph line data="formatted_data1" title="metadata.title" xlabel="metadata.xlabel" ylabel="metadata.ylabel"></graph>
+              <graph line data="formatted_data1" title="metadata.title" xlabel="metadata.xlabel" ylabel="metadata.ylabel" size></graph>
             </div>
           </div>
 
@@ -31,11 +31,17 @@
             <div class="col-md-12 graph">
               <graph line data="formatted_data2" title="metadata.title" xlabel="metadata.xlabel" ylabel="metadata.ylabel"></graph>
             </div>
+          </div> -->
+
+         <div class="row">
+            <div class="col-md-12 graph">
+              <graph multiline data="formatted_2line" title="metadata.title" xlabel="metadata.xlabel" ylabel="metadata.ylabel" ></graph>
+            </div>
           </div>
 
          <div class="row">
             <div class="col-md-12 graph">
-              <graph multiline line data="formatted_2line" title="metadata.title" xlabel="metadata.xlabel" ylabel="metadata.ylabel"></graph>
+              <graph multitypeline data="formatted_2line" title="metadata.title" xlabel="metadata.xlabel" ylabel="metadata.ylabel" ></graph>
             </div>
           </div>
 

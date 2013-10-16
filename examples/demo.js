@@ -5,20 +5,20 @@ var app = angular.module('demo-graph', ['graph']);
 app.controller('DemoCtrl', function ($scope){
     $scope.randomizeData = function () {
       var values = [
-        Math.random() * 10, 
-        Math.random() * 10, 
-        Math.random() * 10, 
-        Math.random() * 10, 
-        Math.random() * 10, 
-        Math.random() * 10, 
-        Math.random() * 10, 
-        Math.random() * 10, 
-        Math.random() * 10, 
-        Math.random() * 10, 
-        Math.random() * 10, 
-        Math.random() * 10, 
+        Math.random() * 100, 
+        Math.random() * 100, 
+        Math.random() * 100, 
+        Math.random() * 100, 
+        Math.random() * 100, 
+        Math.random() * 100, 
+        Math.random() * 100, 
+        Math.random() * 100, 
+        Math.random() * 100, 
+        Math.random() * 100, 
+        Math.random() * 100, 
+        Math.random() * 100, 
       ];
-      var baseDate = 1357714800000 * Math.random ();
+      var baseDate = 1357714800000 - 2000000 * Math.random ();
       var dates = [
         baseDate,
         baseDate + 100000,
@@ -53,6 +53,7 @@ app.controller('DemoCtrl', function ($scope){
     $scope.data2 = $scope.randomizeData();
     $scope.data2line = $scope.data1;
     $scope.data2line.push($scope.data2[0])
+    $scope.data2line.push($scope.data2[1])
   };
   $scope.updateData();
   
@@ -88,10 +89,14 @@ app.controller('DemoCtrl', function ($scope){
       var xyobject = {
         date: data[1].values[i], 
         value: data[0].values[i],
+        date2: data[3].values[i],
         value2: data[2].values[i] 
       };
       formatted_data.push(xyobject);
     };
     return formatted_data
   };
+
+
+
 });
