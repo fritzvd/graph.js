@@ -17,35 +17,32 @@
       <div class="row">
         <div class="col-md-8">
           <div class="row">
-            <div class="col-md-12">
-              <!-- <nxt-line-graph data="formatted_data" title="metadata.title" xlabel="metadata.xlabel" ylabel="metadata.ylabel"></nxt-line-graph> -->
+            <div class="col-md-12 graph">
+              <h3>Scatterplot</h3>
+              <graph scatter data="scatter" title="metadata.title" xlabel="metadata.xlabel" ylabel="metadata.ylabel" ></graph>
             </div>
           </div>
-<!--           <div class="row">
+           <div class="row">
             <div class="col-md-12 graph">
+              <h3>Single line</h3>
               <graph line data="formatted_data1" title="metadata.title" xlabel="metadata.xlabel" ylabel="metadata.ylabel" size></graph>
             </div>
           </div>
 
          <div class="row">
             <div class="col-md-12 graph">
-              <graph line data="formatted_data2" title="metadata.title" xlabel="metadata.xlabel" ylabel="metadata.ylabel"></graph>
-            </div>
-          </div> -->
-
-         <div class="row">
-            <div class="col-md-12 graph">
+              <h3>Double line scaled axis</h3>
               <graph multiline data="formatted_2line" title="metadata.title" xlabel="metadata.xlabel" ylabel="metadata.ylabel" ></graph>
             </div>
           </div>
 
          <div class="row">
             <div class="col-md-12 graph">
+              <h3>Double line double axis</h3>
               <graph multitypeline data="formatted_2line" title="metadata.title" xlabel="metadata.xlabel" ylabel="metadata.ylabel" ></graph>
             </div>
           </div>
-
-          
+              
         </div>
         <div class="col-md-4">
           <button type="button" class="btn btn-default" ng-click="updateData()">Randomize Data for Graph</button>

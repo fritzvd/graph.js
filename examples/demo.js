@@ -58,7 +58,8 @@ app.controller('DemoCtrl', function ($scope){
   $scope.updateData();
   
   $scope.malformData = function () {
-    $scope.data1 = [[2]];
+    $scope.formatted_data1 = [[2]];
+    $scope.formatted_data2 = [[2]];
   };
   
   $scope.$watch('data1', function () {
@@ -67,6 +68,7 @@ app.controller('DemoCtrl', function ($scope){
       $scope.formatted_data1 = $scope.format_data($scope.data1);
       $scope.formatted_data2 = $scope.format_data($scope.data2);
       $scope.formatted_2line = $scope.format_2linedata($scope.data2line);
+      $scope.scatter = $scope.format_scatter([$scope.data1[0], $scope.data2[0]]);
       // console.log($scope.data2line);
     }
   });
@@ -82,6 +84,20 @@ app.controller('DemoCtrl', function ($scope){
     };
     return formatted_data
   };
+
+  $scope.format_scatter = function(data) {
+    var formatted_data = [];
+    for (var i=0; i<data[0].values.length; i++){
+      var xyobject = {
+        x: data[1].values[i], 
+        y: data[0].values[i] 
+      };
+      formatted_data.push(xyobject);
+    };
+    return formatted_data
+  };
+
+
 
   $scope.format_2linedata = function(data) {
     var formatted_data = [];
