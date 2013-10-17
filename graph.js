@@ -3,113 +3,268 @@
 angular.module('graph', []);
 
 angular.module('graph')
-  .directive('graph', function () {
+.directive('graph', function () {
 
-    var controller = function ($scope) {
-      this.createCanvas = function (data, element, legend) {
-        var margin = {
-            top: 20,
-            right: 20,
-            bottom: 10,
-            left: 30
-          },
-          maxwidth = 350,
-          maxheight = 200;
-
-        if (legend.yLabel) {
-          margin.left = 45;
-        }
-
-        if (legend.xLabel) {
-          margin.bottom = 15;
-        }
-
-        var width = maxwidth - margin.left - margin.right,
-          height = maxheight - margin.top - margin.bottom;
-
-        if (legend.ymax == undefined){
-          legend.ymax = d3.max(data, function(d){
-                return d.value
-              });
-        }
-        if (legend.ymin == undefined){
-          legend.ymin = d3.min(data, function(d){
-                return d.value
-              });
-        }
-
-        // Make sure your context as an id or so...
-        var svg = d3.select(element[0])
-          .html("")
-          .append("svg:svg")
-          .attr('width', maxwidth)
-          .attr('height', maxheight + 25)
-          .append("svg:g")
-          .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
-
-        svg.append("svg:rect")
-          .attr("width", width)
-          .attr("height", height)
-          .attr("class", "plot");
-
-
-        
-       //Create title
-        svg.append("text")
-          .attr("x", width / 2)
-          .attr("y", -50 / 2 + margin.top)
-          .attr("class", "title")
-          .style("text-anchor", "middle")
-          .text(legend.title);
-           
-          return {
-            svg: svg,
-            height: height,
-            width: width,
-            margin: margin
-          }
-      };
-
-    };
-
-    var link = function (scope, element, attrs, graphCtrl){
-
-      // scope.$watch('size', function () {
-      //   var svg = d3.select("svg:svg")
-      //     .attr('width', size.width)
-      //     .attr('height', size.height)
-
-      //   svg.append("svg:rect")
-      //     .attr("width", size.width)
-      //     .attr("height", size.height)
-      //     .attr("class", "plot");
-
-      // });
-
-
-    };
-
-    return {
-      controller: controller,
-      link: link,
-      scope: {
-        // TODO: add extra options (e.g. width)? 
-        title: '=',
-        data: '=',
-        xlabel: '=',
-        ylabel: '=',
-        xmin: '=',
-        xmax: '=',
-        ymin: '=',
-        ymax: '=',
-        type: '=',
-        size: '='
+  var controller = function ($scope) {
+    this.createCanvas =  function(legend, element) {
+      var margin = {
+        top: 20,
+        right: 20,
+        bottom: 10,
+        left: 30
       },
-      restrict: 'E',
-      replace: true,
-      template: '<div class="shabooya"></div>'
-    }
-  });
+      maxwidth = 350,
+      maxheight = 200;
+
+      if (legend.yLabel) {
+        margin.left = 45;
+      }
+
+      if (legend.xLabel) {
+        margin.bottom = 15;
+      }
+      var width = maxwidth - margin.left - margin.right,
+        height = maxheight - margin.top - margin.bottom;
+
+      var svg = d3.select(element[0])
+        .html("")
+        .append("svg:svg")
+        .attr('width', maxwidth)
+        .attr('height', maxheight + 25)
+        .append("svg:g")
+        .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
+
+      svg.append("svg:rect")
+        .attr("width", width)
+        .attr("height", height)
+        .attr("class", "plot");
+      //Create title
+      svg.append("text")
+        .attr("x", width / 2)
+        .attr("y", -50 / 2 + margin.top)
+        .attr("class", "title")
+        .style("text-anchor", "middle")
+        .text(legend.title);
+              
+      if (legend.xLabel ){
+         //Create X axis label   
+         svg.append("text")
+           .attr("x", width / 2)
+           .attr("y",  height + margin.bottom * 2)
+           .style("text-anchor", "middle")
+           .text(legend.xLabel);
+       } 
+
+      if (legend.yLabel) {   
+        //Create Y axis label
+        svg.append("text")
+          .attr("transform", "rotate(-90)")
+          .attr("y", 0 - margin.left)
+          .attr("x", 0 - (height / 2))
+          .attr("dy", "0.9em")
+          .style("text-anchor", "middle")
+          .text(legend.yLabel);
+      }
+      return {
+        svg: svg,
+        height: height,
+        width: width,
+        margin: margin
+      };
+    };
+
+    this.maxMin = function (data, key) {
+      var max = d3.max(data, function(d){
+              return Number(d[key]);
+            });
+
+      var min = d3.min(data, function(d){
+              return Number(d[key]);
+            });
+      return {
+        max: max, 
+        min: min
+      };
+    };
+
+    this.scale = function (min, max, options) {
+      if (options.type === 'time'){
+        var scale = d3.time.scale()
+            .domain([min, max])
+            .range([options.range[0], options.range[1]]);
+      } else if (options.type === 'kpi') {
+          var scale = d3.time.scale()
+            .domain(d3.extent(data, function (d) {
+                return Date.parse(d.date)
+              }))
+            .range([options.range[0], options.range[1]]);
+      } else {
+        var scale = d3.scale.linear()
+            .domain([min, max])
+            .range([options.range[0], options.range[1]]);
+      }
+      return scale;
+    };
+
+    this.makeAxis = function (scale, options) {
+      if (options.tickFormat){
+        var axis = d3.svg.axis()
+                .scale(scale)
+                .orient(options.orientation)
+                .tickFormat(options.tickFormat)
+                .ticks(5); 
+      } else {
+        var axis = d3.svg.axis()
+              .scale(scale)
+              .orient(options.orientation)
+              .ticks(5);        
+      }
+      return axis
+      };
+    this.drawAxes = function (svg, x, y, options){
+      if (options.axes) {
+        var xAxis = options.axes.x;
+        var yAxis = options.axes.y;
+      } else {
+        var xAxis = this.makeAxis(x.scale, {orientation: "bottom"});
+        var yAxis = this.makeAxis(y.scale, {orientation: "left"});
+      }
+      svg.append("svg:g")
+        .attr("class", "x axis")
+        .attr("transform", "translate(0, " + options.height + ")")
+        .call(xAxis);
+
+      svg.append("g")
+        .attr("class", "y axis")
+        .call(yAxis);
+
+      svg.append("g")
+        .attr("class", "x grid")
+        .attr("transform", "translate(0, " + (options.height + 6) + ")")
+        .call(xAxis
+          .tickSize(-options.height, 0, 0)
+        );
+
+      svg.append("g")
+        .attr("class", "y grid")
+        .call(yAxis
+          .tickSize(-options.width, 0, 0)
+          .tickFormat("")
+        );
+    };
+  };
+
+  var link = function (scope, element, attrs, graphCtrl){
+
+    scope.$watch('data', function () {
+      if (scope.data !== undefined && graphCtrl.callChart !== undefined) {
+        if (attrs.ymax){
+          var ymax = parseFloat(attrs.ymax);
+        } 
+        if (attrs.ymin){
+          var ymin = parseFloat(attrs.ymin);
+        };
+        if (attrs.xmax){
+          var xmax = parseFloat(attrs.xmax);
+        } 
+        if (attrs.xmin){
+          var xmin = parseFloat(attrs.xmin);
+        };
+        var legend = {
+          title: scope.title,
+          xLabel: scope.xlabel,
+          yLabel: scope.ylabel,
+          // maybe from scope so controller determines labels
+          ymin: ymin,
+          ymax: ymax,
+          xmin: xmin,
+          xmax: xmax,
+          type: attrs.type
+        };
+        // clear the chart beforehand
+        // NOTE: Still needs some good error handling. 
+        // Such as not calling chart if data is malformed
+        d3.select(element[0]).html("");
+        graphCtrl.callChart(scope.data, element, legend);
+      } else {
+        // empty the mofo beforehand
+        d3.select(element[0]).html("");
+      }
+    });
+
+  };
+
+  return {
+    controller: controller,
+    link: link,
+    scope: {
+      // TODO: add extra options (e.g. width)? 
+      title: '=',
+      data: '=',
+      xlabel: '=',
+      ylabel: '=',
+      xmin: '=',
+      xmax: '=',
+      ymin: '=',
+      ymax: '=',
+      type: '=',
+      size: '='
+    },
+    restrict: 'E',
+    replace: true,
+    template: '<div class="shabooya"></div>'
+  }
+});
+
+angular.module('graph')
+.directive('barChart', function () {
+  var link = function (scope, element, attrs, graphCtrl) {
+    graphCtrl.callChart = function (data, element, legend) {
+        var graph = graphCtrl.createCanvas(legend, element);
+        var svg = graph.svg,
+            height = graph.height,
+            width = graph.width,
+            margin = graph.margin;
+
+
+        var x = graphCtrl.maxMin(data, 'date');
+        var y = graphCtrl.maxMin(data, 'value');
+
+        x.scale = graphCtrl.scale(x.min, x.max, {
+          range: [0, width], 
+          type: 'time'
+        });
+        y.scale = graphCtrl.scale(y.min, y.max, {
+          range: [height, 0]
+        });
+
+        graphCtrl.drawAxes(svg, x, y, {
+          height: height,
+          width: width
+        });
+
+        // Bar Chart specific stuff
+        svg.selectAll(".bar")
+          .data(data)
+          .enter().append("rect")
+            .attr("class", "bar")
+            .attr("x", function(d) { return x.scale(d.date) - .5; })
+            .attr("y", function(d) { return height - y.scale(d.value) - .5; })
+            .attr("width", 10)
+            .attr("height", function(d) { return y.scale(d.value); });
+        svg.append("line")
+          .attr("x1", 0)
+          .attr("x2", width * data.length)
+          .attr("y1", height - .5)
+          .attr("y2", height - .5)
+          .style("stroke", "#ccc");
+    };
+  };
+  return {
+    link: link,
+    require: 'graph'
+  }
+});
 
 
 angular.module('graph')
@@ -123,19 +278,17 @@ angular.module('graph')
             width = graph.width,
             margin = graph.margin;
 
+        var x = graphCtrl.maxMin(data, 'x');
+        var y = graphCtrl.maxMin(data, 'y');
 
-
-        var xMin = d3.min(data, function(d) { return Number(d.x); });
-        var xMax = d3.max(data, function(d) { return Number(d.x); });
-        var yMin = d3.min(data, function(d) { return Number(d.y); });
-        var yMax = d3.max(data, function(d) { return Number(d.y); });
-
-        var x = d3.scale.linear().domain([xMin, xMax])
-        .range([0, width]);
-        var y = d3.scale.linear().domain([yMin, yMax])
-        .range([height, 0]);
-        var xdata = function(d) { return x(d.x); }
-        var ydata = function(d) { return y(d.y); }
+        x.scale = graphCtrl.scale(x.min, x.max, {
+          range: [0, width], 
+        });
+        y.scale = graphCtrl.scale(y.min, y.max, {
+          range: [height, 0]
+        });
+        var xdata = function (d){ return x.scale(d.x)};
+        var ydata = function (d){ return y.scale(d.y)};
 
         var circles = svg.selectAll("circle")
                             .data(data)
@@ -148,29 +301,16 @@ angular.module('graph')
                                 .attr("fill", 'crimson')
                               .on("mouseover", function() { d3.select(this).attr("r", 6) })
                               .on("mouseout", function() { d3.select(this).attr("r", 3) });
-
-       var make_x_axis = function () {
-            return d3.svg.axis()
-              .scale(x)
-              .orient("bottom")
-              .tickFormat(d3.format(".2"))
-              .ticks(5);
-          };
-
-          var xAxis = d3.svg.axis()
-            .scale(x)
-            .orient("bottom")
-            .ticks(5);
         
         var zoomed = function () {
-          svg.select(".x.axis").call(xAxis);
+          svg.select(".x.axis").call(graphCtrl.makeAxis(x.scale, {orientation:"bottom"}));
           svg.select(".x.grid")
-              .call(make_x_axis()
+              .call(graphCtrl.makeAxis(x.scale, {orientation:"bottom"})
               .tickSize(-height, 0, 0)
               .tickFormat(""));
-          svg.select(".y.axis").call(yAxis);
+          svg.select(".y.axis").call(graphCtrl.makeAxis(y.scale, {orientation:"left"}));
           svg.select(".y.grid")
-              .call(make_y_axis()
+              .call(graphCtrl.makeAxis(y.scale, {orientation:"left"})
               .tickSize(-width, 0, 0)
               .tickFormat("")); 
           svg.selectAll("circle")
@@ -179,84 +319,17 @@ angular.module('graph')
         };
 
         var zoom = d3.behavior.zoom()
-          .x(x)
-          .y(y)
+          .x(x.scale)
+          .y(y.scale)
           .on("zoom", zoomed);
 
         svg.call(zoom);
 
-        //TODO: Ticks hardcoded, make variable
-        var make_y_axis = function () {
-          return d3.svg.axis()
-            .scale(y)
-            .orient("left")
-            .ticks(5);
-        };
-
-        svg.append("svg:g")
-          .attr("class", "x axis")
-          .attr("transform", "translate(0, " + height + ")")
-          .call(xAxis);
-
-        var yAxis = d3.svg.axis()
-          .scale(y)
-          .orient("left")
-          .ticks(5);
-
-        svg.append("g")
-          .attr("class", "y axis")
-          .call(yAxis);
-
-        svg.append("g")
-          .attr("class", "x grid")
-          .attr("transform", "translate(0, " + (height + 6) + ")")
-          .call(make_x_axis()
-            .tickSize(-height, 0, 0)
-          );
-
-        svg.append("g")
-          .attr("class", "y grid")
-          .call(make_y_axis()
-            .tickSize(-width, 0, 0)
-            .tickFormat("")
-          );
-
+        graphCtrl.drawAxes(svg, x, y, {
+          height: height,
+          width: width
+        });
       };
-      scope.$watch('data', function () {
-        if (scope.data !== undefined) {
-          if (attrs.ymax){
-            var ymax = parseFloat(attrs.ymax);
-          } 
-          if (attrs.ymin){
-            var ymin = parseFloat(attrs.ymin);
-          };
-          if (attrs.xmax){
-            var xmax = parseFloat(attrs.xmax);
-          } 
-          if (attrs.xmin){
-            var xmin = parseFloat(attrs.xmin);
-          };
-          var legend = {
-            title: scope.title,
-            xLabel: scope.xlabel,
-            yLabel: scope.ylabel,
-            // maybe from scope so controller determines labels
-            ymin: ymin,
-            ymax: ymax,
-            xmin: xmin,
-            xmax: xmax,
-            type: attrs.type
-          };
-          // clear the chart beforehand
-          // NOTE: Still needs some good error handling. 
-          // Such as not calling chart if data is malformed
-          d3.select(element[0]).html("");
-          graphCtrl.callChart(scope.data, element, legend);
-        } else {
-          // empty the mofo beforehand
-          d3.select(element[0]).html("");
-        }
-      });
     };
 
     return {
@@ -284,149 +357,93 @@ angular.module('graph')
         };
 
        graphCtrl.callChart = function (data, element, legend) {
-        var graph = graphCtrl.createCanvas(data, element, legend);
+        var graph = graphCtrl.createCanvas(legend, element);
         var svg = graph.svg,
             height = graph.height,
             width = graph.width,
             margin = graph.margin;
 
-        var x = {};
-        
-         var y = d3.scale.linear()
-            .domain([legend.ymin, legend.ymax])
-            .range([height, 0]);
-        // check if data is time based or distance based
+        var y = graphCtrl.maxMin(data, 'value');
+
+        y.scale = graphCtrl.scale(y.min, y.max, {
+          range: [height, 0]
+        });
+
+        var line = d3.svg.line()
+          .y(function (d) {
+            return y.scale(d.value);
+          });
+
         if (data[0].hasOwnProperty('date')) {
-          x = d3.time.scale()
-            .domain(d3.extent(data, function (d) {
-              if (legend.type === "kpi"){
-                return Date.parse(d.date);            
-              } else {
-                return d.date;
-              }
-            }))
-            .range([0, width]);
-        var chartType = graphCtrl.defineChartType(y);
-
-          chartType.d3graph.x(function (d) {
-              if (legend.type === "kpi"){
-                return x(Date.parse(d.date));
-              } else {
-                return x(d.date);
-              }
+          var x = graphCtrl.maxMin(data, 'date');
+          x.scale = graphCtrl.scale(x.min, x.max, {
+            range: [0, width],
+            type: (legend.type === 'kpi') ? 'kpi' : 'time'
           });
-
-          var make_x_axis = function () {
-            return d3.svg.axis()
-              .scale(x)
-              .orient("bottom")
-              .tickFormat("")
-              .ticks(5);
-          };
-
-          var xAxis = d3.svg.axis()
-            .scale(x)
-            .orient("bottom")
-            .ticks(5);
-
+          x.tickFormat = "";
+          line.x(function (d) {
+            if (legend.type === "kpi"){
+              return x.scale(Date.parse(d.date));
+            } else {
+              return x.scale(d.date);
+            }
+          });
         } else if (data[0].hasOwnProperty('distance')) {
-          x = d3.scale.linear()
-            .domain(d3.extent(data, function (d) {
-              return d.distance;
-            }))
-            .range([0, width]);
-
-          chartType.d3graph.x(function (d) {
-            return x(d.distance);
+          var x = graphCtrl.maxMin(data, 'distance');
+          x.scale = graphCtrl.scale(x.min, x.max, {
+            range: [0, width],
+          });
+          x.tickFormat = d3.format(".2");
+          line.x(function (d) {
+            return x.scale(d.distance);
           });
 
-          var make_x_axis = function () {
-            return d3.svg.axis()
-              .scale(x)
-              .orient("bottom")
-              .tickFormat(d3.format(".2"))
-              .ticks(5);
-          };
-
-          var xAxis = d3.svg.axis()
-            .scale(x)
-            .orient("bottom")
-            .ticks(5);
-        };
+        }
+        var xAxis = graphCtrl.makeAxis(x.scale, {
+          orientation:"bottom",
+          tickFormat: x.tickFormat
+        });
+        var yAxis = graphCtrl.makeAxis(y.scale, {
+          orientation:"left"
+        });
 
         var zoomed = function () {
-          svg.select(".x.axis").call(xAxis);
+          // circleTooltip();
+          svg.select(".x.axis").call(graphCtrl.makeAxis(x.scale, {
+            orientation:"bottom",
+            tickFormat: x.tickFormat
+          }));
           svg.select(".x.grid")
-              .call(make_x_axis()
+              .call(graphCtrl.makeAxis(x.scale,  {
+                orientation:"bottom",
+                tickFormat: x.tickFormat
+              })
               .tickSize(-height, 0, 0)
               .tickFormat(""));
-          svg.select(".y.axis").call(yAxis);
+          svg.select(".y.axis").call(graphCtrl.makeAxis(y.scale, {orientation: "left"}));
           svg.select(".y.grid")
-              .call(make_y_axis()
+              .call(graphCtrl.makeAxis(y.scale, {orientation: "left"})
               .tickSize(-width, 0, 0)
               .tickFormat("")); 
-          svg.select("." + chartType.cssClass)
-              .attr("class", chartType.cssClass)
-              .attr("d", chartType.d3graph);
+          svg.select(".line")
+              .attr("class", "line")
+              .attr("d", line);
         };
 
         var zoom = d3.behavior.zoom()
-          .x(x)
+          .x(x.scale)
           .on("zoom", zoomed);
 
         svg.call(zoom);
 
-        //TODO: Ticks hardcoded, make variable
-        var make_y_axis = function () {
-          return d3.svg.axis()
-            .scale(y)
-            .orient("left")
-            .ticks(5);
-        };
-
-        svg.append("svg:g")
-          .attr("class", "x axis")
-          .attr("transform", "translate(0, " + height + ")")
-          .call(xAxis);
-
-        var yAxis = d3.svg.axis()
-          .scale(y)
-          .orient("left")
-          .ticks(5);
-
-        svg.append("g")
-          .attr("class", "y axis")
-          .call(yAxis);
-
-        svg.append("g")
-          .attr("class", "x grid")
-          .attr("transform", "translate(0, " + (height + 6) + ")")
-          .call(make_x_axis()
-            .tickSize(-height, 0, 0)
-          );
-
-        svg.append("g")
-          .attr("class", "y grid")
-          .call(make_y_axis()
-            .tickSize(-width, 0, 0)
-            .tickFormat("")
-          );
-
-        //Create X axis label   
-        svg.append("text")
-          .attr("x", width / 2)
-          .attr("y",  height + margin.bottom * 2)
-          .style("text-anchor", "middle")
-          .text(legend.xLabel);
-              
-        //Create Y axis label
-        svg.append("text")
-          .attr("transform", "rotate(-90)")
-          .attr("y", 0 - margin.left)
-          .attr("x", 0 - (height / 2))
-          .attr("dy", "0.9em")
-          .style("text-anchor", "middle")
-          .text(legend.yLabel);
+        graphCtrl.drawAxes(svg, x, y, {
+          height: height,
+          width: width,
+          axes: {
+            x: xAxis,
+            y: yAxis
+          }
+        });
 
         var clip = svg.append("svg:clipPath")
           .attr("id", "clip")
@@ -437,52 +454,45 @@ angular.module('graph')
           .attr("height", height);
 
 
-      var chartBody = svg.append("g")
-        .attr("clip-path", "url(#clip)");
+        var chartBody = svg.append("g")
+          .attr("clip-path", "url(#clip)");
 
-      chartBody.append("svg:path")
-        .datum(data)
-        .attr("class", chartType.cssClass)
-        .attr("d", chartType.d3graph);
+        chartBody.append("svg:path")
+          .datum(data)
+          .attr("class","line")
+          .attr("d", line)
+
+
+      // var circleTooltip = function () {
+      //   svg.selectAll("circle").remove();
+      //   svg.selectAll("text.d3tooltip").remove();
+      //   svg.selectAll("circle")
+      //     .data(data)
+      //     .enter()
+      //     .append("circle")
+      //       .attr("class","tipcircle")
+      //       .attr("cx", function(d,i){return x(d.date)})
+      //       .attr("cy",function(d,i){return y(d.value)})
+      //       .attr("r",12)
+      //       .style("stroke", "rgba(255,255,255,0)")//1e-6
+      //       .style("fill", "rgba(255,255,255,0)")//1e-6
+      //       .on("mouseenter", function(d){
+      //         var format = d3.format(".2f")
+      //         d3.select(this.parentElement)
+      //           .append("text")
+      //           .attr("x", x(d.date))
+      //           .attr("y", y(d.value))
+      //           .attr("class", "d3tooltip")
+      //           .text(format(d.value))
+      //       })
+      //       .on("mouseout", function (d) {
+      //         d3.select(this.parentElement).select("text.d3tooltip").remove();
+      //       });
+      // };
+      // circleTooltip();
             
       };
 
-
-      scope.$watch('data', function () {
-        if (scope.data !== undefined) {
-          if (attrs.ymax){
-            var ymax = parseFloat(attrs.ymax);
-          } 
-          if (attrs.ymin){
-            var ymin = parseFloat(attrs.ymin);
-          };
-          if (attrs.xmax){
-            var xmax = parseFloat(attrs.xmax);
-          } 
-          if (attrs.xmin){
-            var xmin = parseFloat(attrs.xmin);
-          };
-          var legend = {
-            title: scope.title,
-            xLabel: scope.xlabel,
-            yLabel: scope.ylabel,
-            // maybe from scope so controller determines labels
-            ymin: ymin,
-            ymax: ymax,
-            xmin: xmin,
-            xmax: xmax,
-            type: attrs.type
-          };
-          // clear the chart beforehand
-          // NOTE: Still needs some good error handling. 
-          // Such as not calling chart if data is malformed
-          d3.select(element[0]).html("");
-          graphCtrl.callChart(scope.data, element, legend);
-        } else {
-          // empty the mofo beforehand
-          d3.select(element[0]).html("");
-        }
-      });
     };
 
     return {
