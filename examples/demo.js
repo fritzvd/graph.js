@@ -48,12 +48,59 @@ app.controller('DemoCtrl', function ($scope){
       return data
   };
 
+
+  $scope.kpiData = function () {
+      var values = [
+        Math.random() * 100, 
+        Math.random() * 100, 
+        Math.random() * 100, 
+        Math.random() * 100, 
+        Math.random() * 100, 
+        Math.random() * 100, 
+        Math.random() * 100, 
+        Math.random() * 100, 
+        Math.random() * 100, 
+        Math.random() * 100, 
+        Math.random() * 100, 
+        Math.random() * 100, 
+      ];
+      var baseDate = 2006;
+      var dates = [
+        baseDate,
+        baseDate + 1,
+        baseDate + 2,
+        baseDate + 3,
+        baseDate + 4,
+        baseDate + 5,
+        baseDate + 6,
+        baseDate + 7,
+        baseDate + 8,
+        baseDate + 9,
+        baseDate + 10,
+        baseDate + 11,
+      ];
+     var data = [{
+            type: 'y',
+            name: 'Debiet',
+            values: values,
+            unit: "m/s"
+          },
+          {
+            type: 'x',
+            name: 'Time',
+            values: dates,
+            unit: "hr:min"
+          }];
+      return data
+  };
+
   $scope.updateData = function () {
     $scope.data1 = $scope.randomizeData();
     $scope.data2 = $scope.randomizeData();
     $scope.data2line = $scope.data1;
-    $scope.data2line.push($scope.data2[0])
-    $scope.data2line.push($scope.data2[1])
+    $scope.data2line.push($scope.data2[0]);
+    $scope.data2line.push($scope.data2[1]);
+    $scope.KpiData = $scope.kpiData();
   };
   $scope.updateData();
   
@@ -69,6 +116,7 @@ app.controller('DemoCtrl', function ($scope){
       $scope.formatted_data2 = $scope.format_data($scope.data2);
       $scope.formatted_2line = $scope.format_2linedata($scope.data2line);
       $scope.scatter = $scope.format_scatter([$scope.data1[0], $scope.data2[0]]);
+      $scope.kpi_data = $scope.format_data($scope.KpiData);
       // console.log($scope.data2line);
     }
   });

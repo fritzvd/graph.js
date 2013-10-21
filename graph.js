@@ -94,7 +94,7 @@ angular.module('graph')
             .range([options.range[0], options.range[1]]);
       } else if (options.type === 'kpi') {
           var scale = d3.time.scale()
-            .domain(d3.extent(data, function (d) {
+            .domain(d3.extent(options.data, function (d) {
                 return Date.parse(d.date)
               }))
             .range([options.range[0], options.range[1]]);
@@ -344,18 +344,6 @@ angular.module('graph')
   .directive('line', function () {
     var link  = function (scope, element, attrs, graphCtrl) {
 
-      graphCtrl.defineChartType = function (y) {      
-          var d3graph =  d3.svg.line()
-              .y(function (d) {
-                return y(d.value);
-              });
-
-          return {
-            cssClass: "line",
-            d3graph: d3graph
-          }
-        };
-
        graphCtrl.callChart = function (data, element, legend) {
         var graph = graphCtrl.createCanvas(legend, element);
         var svg = graph.svg,
@@ -376,18 +364,25 @@ angular.module('graph')
 
         if (data[0].hasOwnProperty('date')) {
           var x = graphCtrl.maxMin(data, 'date');
-          x.scale = graphCtrl.scale(x.min, x.max, {
-            range: [0, width],
-            type: (legend.type === 'kpi') ? 'kpi' : 'time'
-          });
-          x.tickFormat = "";
-          line.x(function (d) {
-            if (legend.type === "kpi"){
+          if (legend.type === "kpi") {
+            x.scale = graphCtrl.scale(x.min, x.max, {
+              range: [0, width],
+              type: 'kpi',
+              data: data
+            });
+            line.x(function (d) {
               return x.scale(Date.parse(d.date));
-            } else {
+            }); 
+          } else {
+            x.scale = graphCtrl.scale(x.min, x.max, {
+              range: [0, width],
+              type: 'time'
+            });
+            x.tickFormat = "";
+            line.x(function (d) {
               return x.scale(d.date);
-            }
-          });
+            });            
+          }
         } else if (data[0].hasOwnProperty('distance')) {
           var x = graphCtrl.maxMin(data, 'distance');
           x.scale = graphCtrl.scale(x.min, x.max, {
